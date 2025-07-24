@@ -61,8 +61,7 @@ You are a financial data assistant. The dataframe 'df' has the following columns
 
 User question: "{question}"
 
-Write Python pandas code to answer the question and visualize it using plotly.
-Return ONLY the code.
+Return ONLY valid Python code (no markdown or explanations).
 """
         try:
             response = client.chat.completions.create(
@@ -71,10 +70,16 @@ Return ONLY the code.
                 temperature=0
             )
             code = response.choices[0].message.content.strip()
+
+            # Remove triple backticks if included
+            if code.startswith("```"):
+                code = code.strip("`")
+                code = "\n".join(code.split("\n")[1:-1])
+
             st.code(code, language='python')
-            exec(code)
+            exec(code, globals())
         except Exception as e:
-            st.error(f"❌ GPT failed: {str(e)}")
+            st.error(f"🚨 Code execution failed: {e}")
 
     st.subheader("📤 Download Summary")
     summary_csv = monthly_summary.to_csv(index=False).encode('utf-8')
