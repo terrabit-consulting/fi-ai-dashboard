@@ -55,7 +55,6 @@ if uploaded_file:
 
     if question:
         client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-        # openai.api_key = st.secrets["OPENAI_API_KEY"]
         prompt = f"""
 You are a financial data assistant. The dataframe 'df' has the following columns:
 {', '.join(df.columns)}.
@@ -66,12 +65,12 @@ Write Python pandas code to answer the question and visualize it using plotly.
 Return ONLY the code.
 """
         try:
-            response = openai.ChatCompletion.create(
+            response = client.chat.completions.create(
                 model="gpt-4o",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0
             )
-            code = response.choices[0].message['content'].strip()
+            code = response.choices[0].message.content.strip()
             st.code(code, language='python')
             exec(code)
         except Exception as e:
