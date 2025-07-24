@@ -54,7 +54,8 @@ if uploaded_file:
     question = st.text_input("Ask a question about your financial data")
 
     if question:
-        openai.api_key = st.secrets["OPENAI_API_KEY"]
+        client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+        # openai.api_key = st.secrets["OPENAI_API_KEY"]
         prompt = f"""
 You are a financial data assistant. The dataframe 'df' has the following columns:
 {', '.join(df.columns)}.
